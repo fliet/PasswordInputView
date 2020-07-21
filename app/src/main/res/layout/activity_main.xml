@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    tools:context=".MainActivity">
+
+    <com.example.passwordinputviewdemo.PasswordInputView
+        android:id="@+id/password_input_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="20dp"
+        app:border_color="#BBBBBB"
+        app:border_margin="10dp"
+        app:border_width="1dp"
+        app:cursor_color="#69B56D"
+        app:cursor_height="28dp"
+        app:cursor_width="2dp"
+        app:number_count="6"
+        app:select_border_color="#69B56D"
+        app:side_length="45dp"
+        app:text_color="#69B56D"
+        app:text_size="30sp"
+        app:input_type="password"/>
+
+</LinearLayout>

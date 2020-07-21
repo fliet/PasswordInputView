@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="PasswordInputView">
+        <attr name="number_count" format="integer" />
+        <attr name="side_length" format="dimension" />
+        <attr name="text_size" format="dimension" />
+        <attr name="cursor_width" format="dimension" />
+        <attr name="cursor_height" format="dimension" />
+        <attr name="cursor_color" format="color" />
+        <attr name="border_color" format="color" />
+        <attr name="border_margin" format="dimension" />
+        <attr name="border_width" format="dimension" />
+        <attr name="select_border_color" format="color" />
+        <attr name="text_color" format="color" />
+        <attr name="input_type">
+            <enum name="password" value="1"/>
+            <enum name="verification_code" value="2"/>
+        </attr>
+
+    </declare-styleable>
+</resources>
