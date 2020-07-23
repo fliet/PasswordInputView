@@ -12,9 +12,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        PasswordInputView passwordInputView2 = findViewById(R.id.password_input_view);
+        PasswordInputView passwordInputView = findViewById(R.id.password_input_view);
 
-        passwordInputView2.setOnInputFinishListener(new PasswordInputView.OnInputFinishListener() {
+        passwordInputView.setOnInputFinishListener(new PasswordInputView.OnInputFinishListener() {
             @Override
             public void onInputFinish(String inputStr) {
                 Log.e("PasswordInputView", "inputStr：" + inputStr);

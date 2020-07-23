@@ -17,5 +17,11 @@
             <enum name="verification_code" value="2"/>
         </attr>
 
+        <attr name="border_style">
+            <enum name="square_close" value="1"/>
+            <enum name="square_separable" value="2"/>
+            <enum name="underline" value="3"/>
+        </attr>
+
     </declare-styleable>
 </resources>

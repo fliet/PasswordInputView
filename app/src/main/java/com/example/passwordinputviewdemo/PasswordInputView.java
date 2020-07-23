@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -38,29 +39,53 @@ import java.util.List;
  */
 public class PasswordInputView extends View {
 
-    private float textSize;
-    private int numberCount;
-    private float sideLength;
+    private Context context;
+    private List<Integer> numList = new ArrayList<>();
+    private InputMethodManager imm;
+    private OnInputFinishListener onInputFinishListener;
+
     private int cursorAlpha;
 
     private Paint borderPaint = new Paint();
     private Paint cursorPaint = new Paint();
     private Paint textPaint = new Paint();
-    private List<Integer> numList = new ArrayList<>();
-    private InputMethodManager imm;
-    private float margin;
-    private Context context;
+
+    // 字体尺寸
+    private float textSize;
+    // 输入框个数
+    private int numberCount;
+    // 输入框边长
+    private float sideLength;
+    // 边框间距。只在borderStyle为SQUARE_SEPARABLE和UNDERLINE情况下起作用
+    private float borderMargin;
+    // 光标宽度
     private float cursorWidth;
+    // 光标高度
     private float cursorHeight;
+    // 光标颜色
     private int cursorColor;
+    // 边框颜色
     private int borderColor;
+    // 被选中时，边框颜色
     private int selectBorderColor;
+    // 边框宽度
     private float borderWidth;
+    // 文字颜色
     private int textColor;
-    private String inputType;
+    // 圆点半径。只有在inputType为PASSWORD才会起作用
     private int dotRadius;
 
-    private OnInputFinishListener onInputFinishListener;
+    // 输入类型：1-密码；2-验证码
+    private String inputType;
+    private final static String PASSWORD = "1";
+    private final static String VERIFICATION_CODE = "2";
+
+    // 输入框样式：1-正方形紧凑；2-正方形分离；3-下划线
+    private String borderStyle;
+    private final static String SQUARE_CLOSE = "1";
+    private final static String SQUARE_SEPARABLE = "2";
+    private final static String UNDERLINE = "3";
+
 
     public PasswordInputView(Context context) {
         super(context);
@@ -70,7 +95,6 @@ public class PasswordInputView extends View {
         super(context, attrs);
 
         this.context = context;
-        margin = DensityUtil.dip2px(context, 10);
         dotRadius = DensityUtil.dip2px(context, 4);
 
         TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.PasswordInputView);
@@ -84,9 +108,13 @@ public class PasswordInputView extends View {
         selectBorderColor = typedArray.getColor(R.styleable.PasswordInputView_select_border_color, Color.parseColor("#ffffff"));
         borderWidth = typedArray.getDimension(R.styleable.PasswordInputView_border_width, DensityUtil.dip2px(context, 1));
         textColor = typedArray.getColor(R.styleable.PasswordInputView_text_color, Color.parseColor("#ffffff"));
-        margin = typedArray.getDimension(R.styleable.PasswordInputView_border_margin, DensityUtil.dip2px(context, 5));
+        borderMargin = typedArray.getDimension(R.styleable.PasswordInputView_border_margin, DensityUtil.dip2px(context, 5));
         inputType = typedArray.getString(R.styleable.PasswordInputView_input_type);
+        borderStyle = typedArray.getString(R.styleable.PasswordInputView_border_style);
         typedArray.recycle();
+
+        if (TextUtils.isEmpty(inputType)) inputType = PASSWORD;
+        if (TextUtils.isEmpty(borderStyle)) borderStyle = SQUARE_CLOSE;
 
         borderPaint.setColor(Color.GRAY);
         borderPaint.setStyle(Paint.Style.STROKE);
@@ -142,7 +170,6 @@ public class PasswordInputView extends View {
                     }
 
                     if (keyCode == KeyEvent.KEYCODE_ENTER) {
-
                     }
                 }
 
@@ -166,21 +193,66 @@ public class PasswordInputView extends View {
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
 
         // 此处需要添加边框的宽度。见上方解释
-        setMeasuredDimension(widthMode == MeasureSpec.EXACTLY ? widthSize : (int) (numberCount * sideLength + margin * (numberCount - 1) + borderWidth),
+        setMeasuredDimension(widthMode == MeasureSpec.EXACTLY ? widthSize : (int) (numberCount * sideLength + borderMargin * (numberCount - 1) + borderWidth),
                 heightMode == MeasureSpec.EXACTLY ? heightSize : (int) (sideLength + borderWidth));
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
 
+        if (SQUARE_CLOSE.equals(borderStyle)) {
+            drawSquareCloseBorder(canvas);
+        } else if (SQUARE_SEPARABLE.equals(borderStyle)) {
+            drawSquareSeparableBorder(canvas);
+        } else if (UNDERLINE.equals(borderStyle)) {
+            drawUnderlineBorder(canvas);
+        }
+
+
+        if (PASSWORD.equals(inputType)) { // 密码
+            drawDot(canvas);
+        } else if (VERIFICATION_CODE.equals(inputType)) { // 验证码
+            // c. 绘制文字
+            drawText(canvas);
+        }
+    }
+
+    private void drawSquareCloseBorder(Canvas canvas){
+        int width = getWidth();
+        int height = getHeight();
+
+        float cx = width / 2.0f;
+        float cy = height / 2.0f;
+
+        float rectWidth = sideLength * numberCount;
+        float left = cx - rectWidth / 2;
+        float top = cy - sideLength / 2;
+        borderMargin = 0;
+
+        canvas.drawRoundRect(left, top, left + rectWidth, top + sideLength, 10, 10, borderPaint);
+
+        if (numList.size() == 0) {
+            drawCursor(canvas, left, top);
+        }
+        for (int i = 1; i < numberCount; i++) {
+            canvas.drawLine(left + sideLength * i, top, left + sideLength * i, top + sideLength, borderPaint);
+
+            if (i == numList.size()) {
+                // b. 绘制光标
+                drawCursor(canvas, left + sideLength * i, top);
+            }
+        }
+    }
+
+    private void drawSquareSeparableBorder(Canvas canvas){
         // 注意这里
         float left = borderWidth / 2;
         float top = borderWidth / 2;
-
         for (int i = 0; i < sideLength; i++) {
-            if (i != 0) left = left + margin + sideLength;
+            if (i != 0) left = left + borderMargin + sideLength;
 
             borderPaint.setColor(i <= numList.size() ? selectBorderColor : borderColor);
+
             // a. 绘制边框
             canvas.drawRect(left, top, left + sideLength, top + sideLength, borderPaint);
 
@@ -189,13 +261,26 @@ public class PasswordInputView extends View {
                 drawCursor(canvas, left, top);
             }
         }
+    }
 
-        if ("1".equals(inputType)) { // 密码
-            textPaint.setStyle(Paint.Style.FILL);
-            drawDot(canvas);
-        } else if ("2".equals(inputType)) { // 验证码
-            // c. 绘制文字
-            drawText(canvas);
+    private void drawUnderlineBorder(Canvas canvas){
+        // 注意这里
+        float left = borderWidth / 2;
+        float top = borderWidth / 2;
+        for (int i = 0; i < sideLength; i++) {
+            if (i != 0) left = left + borderMargin + sideLength;
+
+            borderPaint.setColor(i <= numList.size() ? selectBorderColor : borderColor);
+
+            // a. 绘制边框
+            //canvas.drawRect(left, top, left + sideLength, top + sideLength, borderPaint);
+
+            canvas.drawLine(left, top + sideLength, left + sideLength, top + sideLength, borderPaint);
+
+            if (i == numList.size()) {
+                // b. 绘制光标
+                drawCursor(canvas, left, top);
+            }
         }
     }
 
@@ -208,6 +293,7 @@ public class PasswordInputView extends View {
     }
 
     private void drawDot(Canvas canvas) {
+        textPaint.setStyle(Paint.Style.FILL);
         int inputLength = numList.size();
         if (inputLength == 0) return;
 
@@ -216,7 +302,7 @@ public class PasswordInputView extends View {
         float cy = height / 2f;
 
         for (int i = 0; i < inputLength; i++) {
-            if (i != 0) left = left + margin + sideLength;
+            if (i != 0) left = left + borderMargin + sideLength;
             float startX = left + sideLength / 2;
 
             canvas.drawCircle(startX, cy, dotRadius, textPaint);
@@ -236,7 +322,7 @@ public class PasswordInputView extends View {
             Paint.FontMetrics fontMetrics = textPaint.getFontMetrics();
             float dy = (fontMetrics.ascent + fontMetrics.descent) / 2;
 
-            if (i != 0) left = left + margin + sideLength;
+            if (i != 0) left = left + borderMargin + sideLength;
             float startX = left + sideLength / 2;
 
             canvas.drawText(String.valueOf(numList.get(i)), startX - dx, cy - dy, textPaint);

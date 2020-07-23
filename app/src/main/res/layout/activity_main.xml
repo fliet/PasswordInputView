@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:gravity="center"
     tools:context=".MainActivity">
 
@@ -11,19 +12,54 @@
         android:id="@+id/password_input_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="20dp"
         app:border_color="#BBBBBB"
         app:border_margin="10dp"
+        app:border_style="square_separable"
         app:border_width="1dp"
         app:cursor_color="#69B56D"
         app:cursor_height="28dp"
         app:cursor_width="2dp"
+        app:input_type="password"
         app:number_count="6"
         app:select_border_color="#69B56D"
         app:side_length="45dp"
         app:text_color="#69B56D"
-        app:text_size="30sp"
-        app:input_type="password"/>
+        app:text_size="30sp" />
+
+    <com.example.passwordinputviewdemo.PasswordInputView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        app:border_color="#BBBBBB"
+        app:border_margin="10dp"
+        app:border_style="square_close"
+        app:border_width="1dp"
+        app:cursor_color="#69B56D"
+        app:cursor_height="28dp"
+        app:cursor_width="2dp"
+        app:input_type="password"
+        app:number_count="4"
+        app:select_border_color="#69B56D"
+        app:side_length="45dp"
+        app:text_color="#69B56D"
+        app:text_size="30sp" />
+
+    <com.example.passwordinputviewdemo.PasswordInputView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        app:border_color="#BBBBBB"
+        app:border_margin="10dp"
+        app:border_style="underline"
+        app:border_width="1dp"
+        app:cursor_color="#69B56D"
+        app:cursor_height="28dp"
+        app:cursor_width="2dp"
+        app:input_type="verification_code"
+        app:number_count="5"
+        app:select_border_color="#69B56D"
+        app:side_length="45dp"
+        app:text_color="#69B56D"
+        app:text_size="30sp" />
 
 </LinearLayout>
