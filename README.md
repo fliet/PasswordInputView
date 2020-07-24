@@ -51,4 +51,4 @@
 	border_style：边框类型
 
 ### 展示
-![](https://github.com/fliet/PasswordInputView/blob/master/app/src/main/res/drawable/pic_1.jpg)
+![图片](https://github.com/fliet/PasswordInputView/blob/master/app/src/main/res/drawable/pic_1.jpg)
